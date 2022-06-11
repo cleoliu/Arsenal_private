@@ -1,0 +1,181 @@
+{% extends "fundamental.html" %}
+
+{% block title %}
+KEENLITY CASE -- LOGIN
+{% endblock %}
+{# ------- #}
+{% load static %}
+
+
+{% block main %}
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-xs-4 thumb align-center">
+
+            </div>
+            <div class="col-lg-4 col-md-4 col-xs-4 thumb align-center">
+                <!-- <img class="img-responsive" src="{% static 'img/keenlity_logo.png' %}"
+                    style="max-width:100%; margin-top: 300px;"> -->
+
+                <div class="row justify-content-center" style="margin-top: 200px;text-align:center;">
+                    <h1 class="display-1 fw-bold" style="color: #0066aa;">
+                        KEENLITY
+                    </h1>
+                </div>
+
+                {% if form.errors %}
+                {% for field in form %}
+                {% for error in field.errors %}
+                <div class=”alert alert-danger”>
+                    <li style="color:red">{{ error|escape }}</li>
+                </div>
+                {% endfor %}
+                {% endfor %}
+                {% endif %}
+
+                <form class="row g-3 needs-validation" method="POST" novalidate>
+                    {% csrf_token %}
+                    <div class="col-12">
+                        <label class="form-label">Account Type</label>
+                        <select id="account_type" name="account_type" class="form-select k-picker"
+                            onchange="showTaxIdDiv(this)">
+                            <option value="1" selected>Organization</option>
+                            <option value="0">Personal</option>
+                        </select>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Mail</label>
+                        <input name="email" type="email" class="form-control form-control-sm"
+                            value='{{ form_data.email }}' required>
+                        <div class="invalid-feedback">
+                            Please enter mail.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Name</label>
+                        <input name="username" type="text" class="form-control form-control-sm"
+                            value='{{ form_data.username }}' required>
+                        <div class="invalid-feedback">
+                            Please enter name.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Password</label>
+                        <input name="password1" type="password" class="form-control form-control-sm">
+                        <div class="invalid-feedback">
+                            Please enter password.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Confirm Password</label>
+                        <input name="password2" type="password" class="form-control form-control-sm" required>
+                        <div class="invalid-feedback">
+                            Please enter confirm password.
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Address</label>
+                        <input name="address" type="text" class="form-control form-control-sm"
+                            value='{{ form_data.address }}' required>
+                        <div class="invalid-feedback">
+                            Please enter address.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Phone</label>
+                        <input name="phone" type="text" class="form-control form-control-sm"
+                            value='{{ form_data.phone }}' required>
+                        <div class="invalid-feedback">
+                            Please enter phone.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label id="tax_id_label" class="form-label">Tax ID</label>
+                        <input id="tax_id_input" name="tax_id" type="text" class="form-control form-control-sm"
+                            value='{{ form_data.tax_id }}' required>
+                        <div class="invalid-feedback">
+                            Please enter tax id.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tester</label>
+                        <select name="tester" class="form-select k-picker">
+                            {% for i in range %}
+                            <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Viewer</label>
+                        <select name="viewer" class="form-select k-picker">
+                            {% for i in range %}
+                            <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="invalidCheck2" required>
+                            <label class="form-check-label" for="invalidCheck2">
+                                User Terms and Privacy Policy
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-12 py-4">
+                        <input type="submit" value="Register"
+                            style="display: block;margin: 0 auto;width: 200px;background:#63c4c4; border-color: #63c4c4">
+                    </div>
+                </form>
+
+                <div class="row justify-content-center">
+                    <a class="col-8 mb-5 link-dark text-decoration-none fw-bold"
+                        href="{% url 'users:login_page' %}">Already
+                        have account? Login Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    // Account Type 關於是否顯示 Tax ID
+    function showTaxIdDiv(select) {
+        if (select.value == 1) {
+            document.getElementById('tax_id_label').style.display = "block";
+            document.getElementById('tax_id_input').style.display = "block";
+            document.getElementById('tax_id_input').setAttribute('required', '');
+        } else {
+            document.getElementById('tax_id_label').style.display = "none";
+            document.getElementById('tax_id_input').style.display = "none";
+            document.getElementById('tax_id_input').removeAttribute('required');
+        }
+    }
+
+    (function () {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
+{% endblock %}

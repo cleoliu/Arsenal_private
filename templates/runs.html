@@ -1,0 +1,132 @@
+{% extends "fundamental_page.html" %}
+
+
+
+{% block title %}
+    KEENLITY CASE
+{% endblock %}
+{# -------  #}
+
+{% block style_block %}
+    <style>
+        #miniDashboard{
+            margin-top: 16px;
+            border: 1px solid #0066aa;
+        }
+    </style>
+
+{% endblock %}
+
+
+{% block main %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-8">
+                <div id="miniDashboard">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div style="padding: 8px;">
+                                <input id="runsSelector" style="width: 100%">
+                            </div>
+
+                            <div style="text-align: center">
+                                <div style="color: #555555">100 / 500</div>
+                                <div style="color: #555555">20%</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div id="runChart"></div>
+
+                        </div>
+                        <div class="col-lg-5">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                2222222222    2222222222    2222222222    2222222222    2222222222    2222222222    2222222222    2222222222    2222222222    2222222222    2222222222    2222222222
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+
+        $("#runsSelector").kendoDropDownList({
+            dataTextField: "role_name",
+            dataValueField: "role_value",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "/roles",
+                        type: "get",
+                        dataType: "json",
+                    },
+
+                }
+            }
+        });
+
+        $("#runChart").kendoChart({
+                title: {
+                    text: "What is you favourite sport?"
+                },
+                legend: {
+                    position: "top"
+                },
+                seriesDefaults: {
+                    labels: {
+                        template: "#= category # - #= kendo.format('{0:P}', percentage)#",
+                        position: "outsideEnd",
+                        visible: true,
+                        background: "transparent"
+                    }
+                },
+                seriesColors: ["#4C9486", "#E86F5E", "#FFD266", "#E6321B", "#8A8F84", "#D86B00", "#F47787"],
+                series: [{
+                    type: "pie",
+                    colorField: "valueColor",
+                    labels: {
+                      visible: true,
+                      template: "#: value #",
+                    },
+                    data: [{
+                        category: "Pass",
+                        value: 162,
+                        valueColor: "#00A600"
+                    }, {
+                        category: "Failed",
+                        value: 85,
+                        valueColor: "#FF2D2D"
+                    }, {
+                        category: "Retest",
+                        value: 3,
+                        valueColor: "#EAC100"
+                    }, {
+                        category: "Block",
+                        value: 9,
+                        valueColor: "#000000"
+                    }, {
+                        category: "Deprecate",
+                        value: 1,
+                        valueColor: "#6A6AFF"
+                    }, {
+                        category: "Untest",
+                        value: 123,
+                        valueColor: "#ADADAD"
+                    }]
+                }],
+                tooltip: {
+                    visible: true,
+                    template: "#= category # - #= kendo.format('{0:P}', percentage) #"
+                }
+            });
+
+    </script>
+
+
+{% endblock %}
+{# -------  #}

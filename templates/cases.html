@@ -1,0 +1,758 @@
+{% extends "fundamental_page.html" %}
+
+
+
+{% block title %}
+    KEENLITY CASE
+
+{% endblock %}
+{# -------  #}
+
+{% block style_block %}
+    <style>
+        .list-custom-group-view{
+            height: 100px; margin: 8px; border: 3px solid #5f9cc6; border-radius: 0px; box-shadow: 3px 3px 6px #5f9cc6;
+        }
+        .add-new-group-name{
+            background-color: #5f9cc6;
+        }
+        .dynamic-grid{
+            margin: 16px;
+        }
+        .grid-labels{
+            border-radius: 6px;
+            padding-left: 10px;
+            padding-right: 10px;
+            color: white;
+        }
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .k-card {
+
+            width: 100%;
+        }
+        .k-card:hover {
+            background-color: #63c4c4;
+        }
+
+        .k-card-action > .k-button{
+            width: 100%;
+        }
+        label{
+            display: block;
+        }
+        .k-vbox{
+            width: 100%;
+        }
+        .borddd{
+            border: 1px solid #63c4c4;
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+        .sssss div{
+            margin: 12px;
+        }
+        #caseActionGrid .k-button{
+            background-color: white;
+            color: #cccccc;
+            border: 1px solid #cccccc;
+        }
+        #caseActionGrid .k-button:hover{
+            background-color: #0066aa;
+            color: white;
+            border: 0;
+        }
+    </style>
+{% endblock %}
+
+
+{% block main %}
+    <div class="container-fluid">
+
+        <div class="row">
+             <div class="col-lg-2" style="">
+                 <div style="padding-top: 3px;">
+                     <button id="creatCaseGroup" style="display:block; margin: 6px auto;width: 100%; background-color: #5f9cc6; border: 1px solid #5f9cc6">Create Case Group</button>
+                     <button id="addTestCase" style="display:block; margin: 6px auto;width: 80%; ">Create Case</button>
+                 </div>
+                 <div id="groupArea" style="padding: 0px; ">
+                    <div id="listView" style="border-width: 0; height: 100%;"></div>
+                 </div>
+
+            </div>
+            <div class="col-lg-10">
+                <div class="row"">
+                    <div class="col-lg-8">
+                        <div id="caseControlPanel" style="padding-top: 3px; padding-bottom: 18px; border-bottom: 1px solid #63c4c4">
+                            <button id="caseActionBtn" style="display:inline-block; margin: 6px auto;">Case Actions</button>
+                            <button id="editSectionBtn" style="display:inline-block; margin: 6px auto;">Edit Sections</button>
+                            <div>
+                                <input id="dropdowntree" style="width: 25%;display: inline-block"/>
+                                <select id="labelFilter" style="width: 50%; display: inline-block" multiple="multiple"></select>
+                            </div>
+                        </div>
+
+                        <div id="casesGridArea" style="padding-top: 6px;">
+
+                        </div>
+                    </div>
+                    <div class="col-lg-4 sssss" style="border-left: #5f9cc6 solid 1px;">
+                        <div style="width: 100%; background-color: #5f9cc6; padding: 6px;margin: 0px; margin-top: 8px; color: white">
+                            12321
+                        </div>
+                        <div>
+                            <label>Sections</label>
+                            <input class="own-textbox" id="dropdowntreeEditPage"/>
+                        </div>
+                        <div id="labelEditPage">
+
+                        </div>
+                        <div>
+                            <input class="own-textbox" id="caseTitle" style="width: 100%;" />
+                        </div>
+                        <div>
+                            <input class="own-textbox"  id="assigneeText" style="width: 100%;" />
+                        </div>
+                        <div>
+                            <input class="own-textbox"  id="goalText" style="width: 100%;" />
+                        </div>
+                        <div>
+                            <textarea class="own-textbox" id="preCondition" style="width: 100%;" required data-required-msg="Precondition is required." data-max-msg="Enter value between 1 and 1000" ></textarea>
+                        </div>
+                        <div>
+                            <textarea class="own-textbox" id="setpDescription" style="width: 100%;" required data-required-msg="Step is required." data-max-msg="Enter value between 1 and 1000" ></textarea>
+                        </div>
+                        <div>
+                            <textarea class="own-textbox" id="noteDescription" style="width: 100%;" data-max-msg="Enter value between 1 and 1000" ></textarea>
+                        </div>
+                        <div>
+                            <button id="editCaseBtn" style="display:inline-block; float: right">Edit</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <div id="caseActionWindow">
+                 <div class="row">
+                         <div style="width: 80%">
+
+                            <div id="caseActionGrid"></div>
+                         </div>
+                         <div style="width: 17%">
+                             <div>
+                                 <label>Case Actions:</label>
+                                 <input id="dropdownCaseActions"/>
+                             </div>
+
+                             <div style="margin-top: 18px;">
+                                 <div id="createAction" class="actionTab">
+    create
+                                 </div>
+                                 <div id="addAction" style="display: none" class="actionTab">
+    add
+                                 </div>
+                                 <div id="copyAction" style="display: none" class="actionTab">
+                                     <label>Case Group Name</label>
+                                     <input id="copyGroupDropdown"/>
+                                     <div style="margin-top: 18px;">
+                                         <button id="copyGroupCancel" style="float: left; background-color: #5f9cc6; border: #5f9cc6 solid 1px">Cancel</button>
+                                        <button id="copyGroupSave" style="float: right">Copy</button>
+                                     </div>
+
+                                 </div>
+                                 <div id="editLabelAction" style="display: none" class="actionTab">
+    edit
+                                 </div>
+                                 <div id="deleteAction" style="display: none" class="actionTab">
+                                     <input id="deleteConfirmActionText"/>
+                                     <div style="margin-top: 18px;">
+                                         <button id="deleteCancel" style="float: left; background-color: #5f9cc6; border: #5f9cc6 solid 1px">Cancel</button>
+                                        <button id="deleteSave" style="float: right; background-color: indianred; border:indianred solid 1px">Delete</button>
+                                     </div>
+                                 </div>
+                             </div>
+
+
+                         </div>
+                 </div>
+        </div>
+    </div>
+
+
+
+<script type="text/x-kendo-tmpl" id="templateShow">
+    <div class="borddd">
+    <div class="k-card k-card-horizontal">
+            <div class="k-vbox k-column">
+                <div class="k-card-header">
+                    <h5 class="k-card-title">#=group_name#</h5>
+                    <h6 class="k-card-subtitle">2022/02/23 ~ 2022/02/28</h6>
+                    <h6 class="k-card-subtitle">Cases: #:cases_num#</h6>
+                    <h6 class="k-card-subtitle">Sections: #sections_num#</h6>
+                </div>
+                <div class="k-card-body">
+                    <div>#:description#</div>
+                </div>
+                <div class="k-card-footer">
+                    <button class="k-button k-button-flat-primary k-button-flat k-button-rectangle k-button-md k-rounded-md group-edit-delete-btn">Delete</button>
+                    <button class="k-button k-button-flat-base k-button-flat k-button-rectangle k-button-md k-rounded-md" style="float: right">Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</script>
+
+<script type="text/x-kendo-tmpl" id="templateEdit">
+    <div class="product-view k-listview-item list-custom-group-view add-new-group-name" style="padding:5px;">
+        <input type="text" data-bind="value:group_name" data-role="textbox" data-type="text" name="group_name" required="required" validationMessage="required" placeholder="Group Name"/>
+        <span data-for="group_name" class="k-invalid-msg"></span>
+        <div style="text-align:center;margin-top:8px;">
+            <a role="button" class="k-button k-button-solid-base k-button-solid k-button-rectangle k-button-md k-rounded-md k-cancel-button" href="\\#"><span class="k-button-icon k-icon k-i-cancel"></span></a>
+            <a role="button" class="k-button k-button-solid-base k-button-solid k-button-rectangle k-button-md k-rounded-md k-update-button" href="\\#"><span class="k-button-icon k-icon k-i-check"></span></a>
+        </div>
+    </div>
+</script>
+
+
+<script type="text/x-kendo-template" id="labelTemplate">
+    #for (var i=0,len=labels.length; i<len; i++){{ '{#' }}
+        <span class="grid-labels" style="background-color: #= labels[i]['color'] #">#= labels[i]['label_name'] #</span>
+    # } #
+</script>
+
+
+
+
+
+
+<script>
+
+    let kendoGridGroup = [];
+    let selectedCases = [];
+
+    function caseActionWindowClick(){
+            caseActionWindow.open();
+    }
+
+    const caseActionWindow = $("#caseActionWindow").kendoWindow({
+            width: "80%",
+            height: "80%",
+            title: "Cases Actions",
+            visible: false,
+            modal:true,
+            actions: [
+                "Maximize",
+                "Close"
+            ],
+            close: function () {
+                kendoDropDownList.select(0)
+                kendoDropDownList.trigger("change");
+            },
+            activate: function(){
+                console.log(selectedCases)
+            }
+        }).data("kendoWindow");
+    const settingWindow = $("#caseActionWindow").parent();
+    settingWindow.find('.k-window-titlebar,.k-window-actions').css('backgroundColor', '#0066ac');
+    settingWindow.find('.k-window-title').css('color', '#ffffff');
+    settingWindow.find('.k-window-action').css('color', '#ffffff');
+
+    var data = [
+        { text: "Create New Run", value: "create" },
+        { text: "Add to Exist Run", value: "add" },
+        { text: "Copy to Group", value: "copy" },
+        { text: "Edit Label", value: "editLabel" },
+        { text: "Delete Cases", value: "delete" },
+    ];
+
+    const kendoDropDownList = $("#dropdownCaseActions").kendoDropDownList({
+        dataTextField: "text",
+        dataValueField: "value",
+        dataSource: data,
+        index: 0,
+        change: function () {
+            let action = this.value();
+            $(".actionTab").hide();
+            $("#" + action + "Action").show();
+            switch (action) {
+                case "create":
+                    console.log("create")
+                    break
+                case "add":
+                    console.log("add")
+                    break
+                case "copy":
+                    console.log("copy")
+                    break
+                case "delete":
+                    console.log("delete")
+                    break
+            }
+        }
+    }).data("kendoDropDownList");
+
+    $("#copyGroupDropdown").kendoDropDownList({
+        dataTextField: "group_name",
+        dataValueField: "group_id",
+        dataSource: {
+            transport: {
+                read: {
+                    dataType: "json",
+                    url: "/v1/casegroups",
+                }
+            }
+        },
+        index: 0,
+        change: function () {
+
+        }
+    });
+
+
+
+    let temp_grid = $("#caseActionGrid").kendoGrid({
+        dataSource: {
+            data: [],
+            schema: {
+              model: { id: "case_id" }
+            }
+        },
+        sortable: true,
+        persistSelection: true,
+        detailTemplate: kendo.template($("#labelTemplate").html()),
+        selectable: false,
+        columns: [
+            {
+                field: "title",
+                title: "Case Title",
+                width: "60%"
+            },{
+                field: "create_date",
+                title: "Create Date",
+                width: "180px;"
+            }, {
+                field: "assignee",
+                title: "Assignee",
+                width: "180px;"
+            },
+            {
+                command: {
+                    text: "X",
+                    click: function(e){
+                        console.log(this.dataItem($(e.currentTarget).closest("tr")))
+                        let current_deletion = this.dataItem($(e.currentTarget).closest("tr"));
+                        let new_selection = [];
+                        selectedCases.forEach(function(value,index,arr){
+                            if(value.case_id !== current_deletion.case_id){
+                                new_selection.push(value);
+                                console.log("PUSH")
+                            }
+                        })
+                        selectedCases = new_selection;
+                        this.dataSource.data(new_selection)
+                        if(selectedCases.length === 0){
+                            caseActionWindow.close();
+                        }
+                    } },
+                    title: "Delete",
+                    width: "60px"
+            }
+        ],
+        change: function(e){
+            console.log(e.sender.select())
+            console.log(e.sender.dataItem(e.sender.select()))
+        },
+    }).data("kendoGrid");
+
+    let selected = [];
+    $(document).ready(function () {
+
+
+
+
+
+        const creatCaseGroup = $("#creatCaseGroup");
+        creatCaseGroup.kendoButton({
+                themeColor: "primary"
+        });
+        creatCaseGroup.click(function(e) {
+
+        });
+        $("#addTestCase").kendoButton({
+                themeColor: "primary"
+        });
+        $("#copyGroupCancel").kendoButton({
+                themeColor: "primary"
+        });
+        $("#copyGroupSave").kendoButton({
+                themeColor: "primary"
+        });
+        $("#deleteCancel").kendoButton({
+                themeColor: "primary"
+        });
+        $("#deleteSave").kendoButton({
+                themeColor: "primary",
+                click: function () {
+                    let deleteConfirm = $("#deleteConfirmActionText").data("kendoTextBox").value();
+                    if(deleteConfirm !== "DELETE CONFIRM"){
+                        //dialog
+                    }else {
+                        //do delete API
+                    }
+
+                }
+        });
+        $("#caseActionBtn").kendoButton({
+                themeColor: "primary",
+            click: function(){
+                console.log("kendoGridGroup");
+                console.log(kendoGridGroup);
+                selectedCases = [];
+                kendoGridGroup.forEach(function(value,index,arr){
+                    let selectCasesEachGrid = value.select();
+
+                    for (var i=0;i<selectCasesEachGrid.length;i++){
+                    　  let selectCase = selectCasesEachGrid[i];
+                        let caseJSON = value.dataItem(selectCase).toJSON()
+                        selectedCases.push(caseJSON)
+                    }
+                })
+                if(selectedCases.length >= 1){
+                    caseActionWindow.center().open();
+                    temp_grid.dataSource.data(selectedCases)
+                }
+            }
+        });
+        $("#editSectionBtn").kendoButton({
+                themeColor: "primary"
+        });
+        $("#editCaseBtn").kendoButton({
+            themeColor: "primary",
+            click: function(){
+                let textboxArray = ["#caseTitle", "#assigneeText", "#goalText"];
+                textboxArray.forEach(function(item, index, array){
+                    $(item).data("kendoTextBox").enable(true)
+                });
+                let textareaArray = ["#preCondition", "#setpDescription", "#noteDescription"];
+                textareaArray.forEach(function(item, index, array){
+                    $(item).data("kendoTextArea").enable(true)
+                });
+                dropdowntreeEditPage.enable(true);
+            }
+        });
+
+
+
+
+
+
+        $("#caseTitle").kendoTextBox({
+            enable: false,
+            placeholder: "Title",
+            label: {
+                content: "Case Title",
+                floating: true
+            }
+        });
+        $("#assigneeText").kendoTextBox({
+            enable: false,
+            placeholder: "Default Assignee",
+            label: {
+                content: "Assignee",
+                floating: true
+            }
+        });
+        $("#deleteConfirmActionText").kendoTextBox({
+            enable: true,
+            placeholder: "Enter “DELETE CONFIRM Here",
+            label: {
+                content: "Enter “DELETE CONFIRM Here",
+                floating: true
+            }
+        });
+        $("#goalText").kendoTextBox({
+            enable: false,
+            placeholder: "Title",
+            label: {
+                content: "Case Title",
+                floating: true
+            }
+        });
+
+        $("#preCondition").kendoTextArea({
+            enable: false,
+            rows: 6,
+            maxLength: 1000,
+            placeholder: "Enter your text here.",
+            label: {
+                content: "Description for pre-condition",
+                floating: true
+            }
+        });
+
+        $("#setpDescription").kendoTextArea({
+            enable: false,
+            rows: 6,
+            maxLength: 1000,
+            placeholder: "Enter your text here.",
+            label: {
+                content: "Description for pre-condition",
+                floating: true
+            }
+        });
+
+        $("#noteDescription").kendoTextArea({
+            enable: false,
+            rows: 6,
+            maxLength: 1000,
+            placeholder: "Enter your text here.",
+            label: {
+                content: "Description for pre-condition",
+                floating: true
+            }
+        });
+
+        const sections = $("#dropdowntree").kendoDropDownTree({
+            placeholder: "Sections",
+            height: "auto",
+            change: dropdowntreeChange
+        }).data('kendoDropDownTree');
+
+        const dropdowntreeEditPage = $("#dropdowntreeEditPage").kendoDropDownTree({
+            enable: false,
+            placeholder: "Sections",
+            height: "auto",
+            change: dropdowntreeChange
+        }).data('kendoDropDownTree');
+
+
+
+        function dropdowntreeChange(){
+            console.log(sections.value())
+            let section_value = sections.value();
+            if(section_value){
+                let section_id = section_value.section_id;
+                $(".dynamic-grid-area").hide();
+                $("#" + section_id + '-area').show();
+            }else {
+                $(".dynamic-grid-area").show();
+            }
+        }
+
+        var labelDataSource = new kendo.data.DataSource({
+            requestEnd: function (e) {
+                var widget = $("#labelFilter").getKendoMultiSelect();
+                var dataSource = e.sender;
+
+                if (e.type === "create") {
+                    var newValue = e.response[0].ProductID;
+
+                    dataSource.one("sync", function () {
+                        widget.value(widget.value().concat([newValue]));
+                    });
+                }
+            },
+            batch: true,
+            transport: {
+                read:  {
+                    url: "/labels",
+                    dataType: "json"
+                },
+                create: {
+                    url: "/labels",
+                    dataType: "json"
+                },
+                parameterMap: function(options, operation) {
+                    if (operation !== "read" && options.models) {
+                        return {models: kendo.stringify(options.models)};
+                    }
+                }
+            },
+            schema: {
+                model: {
+                    id: "label_id",
+                    fields: {
+                        label_id: { type: "string" },
+                        label_name: { type: "string" },
+                        color: { type: "string" }
+                    }
+                }
+            }
+        });
+
+        $("#labelFilter").kendoMultiSelect({
+            filter: "startswith",
+            dataTextField: "label_name",
+            dataValueField: "label_id",
+            dataSource: labelDataSource,
+            placeholder: "Label Filter",
+            autoClose: false
+        });
+
+
+
+
+
+
+         const dataSources = new kendo.data.DataSource({
+            transport: {
+                read:  {
+                    url: "/v1/casegroups",
+                    dataType: "json",
+                },
+                create: {
+                    url: "/casegroup",
+                    type: "post",
+                }
+            },
+            parameterMap: function(options, operation) {
+                console.log(options)
+                console.log(operation)
+                            if (operation !== "read" && options.models) {
+                                return {models: kendo.stringify(options.models)};
+                            }
+                        },
+            schema: {
+                        model: {
+                            id: "group_id",
+                            fields: {
+                                group_id: { editable: false, nullable: true },
+                                group_name: "group_name",
+                                sections_num: { type: "number", nullable: true },
+                                cases_num: { type: "number", nullable: true },
+                                description: { editable: false, nullable: true },
+                            }
+                        }
+                    }
+
+
+        });
+
+        const listView = $("#listView").kendoListView({
+            dataSource: dataSources,
+            template: kendo.template($("#templateShow").html()),
+            editTemplate: kendo.template($("#templateEdit").html()),
+            selectable: "multiple",
+            change: function(){
+                let selectedCases = [];
+                console.log(listView.items().length)
+                let data = dataSources.view(),
+                selected = $.map(this.select(), function(item) {
+                    let select_group = data[$(item).index()]
+                    return data[$(item).index()];
+                });
+                kendoGridGroup = [];
+                // 當抓取到group時，發送並建立case畫面
+                generate_cases(selected);
+            }
+        }).data("kendoListView");
+
+        function generate_cases(selected){
+            let caseControlPanel = $("#caseControlPanel");
+            $("#casesGridArea").html("");
+            if (selected.length === 0){
+                caseControlPanel.hide();
+                return
+            }
+            caseControlPanel.show();
+
+            let section_datas = {
+                'group_id': selected[0].group_id
+            }
+            $.ajax({
+                url: '/sections',
+                data: section_datas,
+                type: "GET",
+                dataType: "json",
+                success: function(resultData){
+                    sections.setDataSource(resultData)
+                    dropdowntreeEditPage.setDataSource(resultData)
+                },
+                error: function(xhr, ajaxOptions, thrownError){
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
+            let datas = {
+                'group_id': selected[0].group_id
+            }
+
+            $.ajax({
+                url: '/v1/cases',
+                data: datas,
+                type: "GET",
+                dataType: "json",
+                success: function(resultData){
+                    console.log(123123123)
+                    $.each(resultData, function(index, element) {
+                        let grid_id = element.sections_id;
+                        $('<div></div>', {
+                            id: grid_id + '-area',
+                            class: 'dynamic-grid-area'
+                        }).appendTo('#casesGridArea');
+                        $('<h3>'+element.sections_name+'</h3>', {
+                        }).appendTo('#' + grid_id + '-area');
+                        $('<div></div>', {
+                            id: grid_id + '-grid',
+                            class: 'dynamic-grid'
+                        }).appendTo('#' + grid_id + '-area');
+
+                        let temp_grid = $("#" + grid_id + '-grid').kendoGrid({
+                            dataSource: {
+                                data: element.case_list,
+                                schema: {
+                                  model: { id: "case_id" }
+                                }
+                            },
+                            sortable: true,
+                            persistSelection: true,
+                            detailTemplate: kendo.template($("#labelTemplate").html()),
+                            selectable: false,
+                            columns: [
+                                { selectable: true, width: "50px" },
+                                {
+                                    field: "title",
+                                    title: "Case Title",
+                                    width: "60%"
+                                },{
+                                    field: "create_date",
+                                    title: "Create Date",
+                                    width: "180px;"
+                                }, {
+                                    field: "assignee",
+                                    title: "Assignee",
+                                    width: "180px;"
+                                }
+                            ],
+                            change: function(e){
+                                console.log("**9")
+                                console.log(e.sender.select())
+                                console.log("**9*")
+                                console.log(e.sender.dataItem(e.sender.select()))
+                            },
+                        }).data("kendoGrid");
+                        temp_grid.expandRow('.k-master-row');
+                        kendoGridGroup.push(temp_grid)
+                    });
+                },
+                error: function(xhr, ajaxOptions, thrownError){
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
+        }
+    })
+
+
+
+</script>
+{% endblock %}
+{# -------  #}

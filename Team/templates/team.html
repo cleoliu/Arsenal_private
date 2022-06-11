@@ -1,0 +1,369 @@
+{% extends "fundamental_page.html" %}
+
+{% block title %}
+    KEENLITY CASE
+{% endblock %}
+{# -------  #}
+
+
+{% block main %}
+    <div class="container-fluid">
+
+        <div class="row">
+             <div class="col-lg-10">
+                 <div style="padding-top: 10px;padding-bottom: 10px;">
+                     <button id="createNewUser">Create New User</button>
+                     <button id="editUser">Edit User</button>
+                 </div>
+
+                <div id="grid" style="margin: 0 auto"></div>
+            </div>
+            <div class="col-lg-1">
+                12132132
+            </div>
+        </div>
+
+
+    </div>
+
+    <div id="createUserWindow">
+        <p>
+            <input id="createUserName" type="text">
+        </p>
+        <p>
+            <input id="createUserMail" type="text">
+        </p>
+        <p>
+            <label>Role</label>
+            <input id="createUserRole">
+        </p>
+        <p>
+            <input id="createUserPassword" type="password">
+            <input id="createUserPasswordConfrim" type="password">
+        </p>
+        <p>
+            <button id="createNewUserBtn" style="width: 100%">Add New User</button>
+        </p>
+
+
+    </div>
+
+    <div id="editUserWindow">
+        <p>
+            <input id="editUserName" type="text">
+        </p>
+        <p>
+            <input id="editUserMail" type="text">
+        </p>
+        <p>
+            <label>Role</label>
+            <input id="editUserRole">
+        </p>
+        <p>
+            <input id="editUserPassword" type="password">
+            <input id="editUserPasswordConfrim" type="password">
+        </p>
+        <p>
+            <button id="editUserBtn" style="width: 100%">Save</button>
+        </p>
+    </div>
+
+
+<script>
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+$(document).ready(function () {
+    let selected_user = null;
+    const createUserBtn = $("#createNewUser");
+    const createUserWinBtn = $("#createNewUserBtn");
+    const editUserBtn = $("#editUser");
+    const editUserWinBtn = $("#editUserBtn");
+    editUserBtn.hide();
+    createUserBtn.click(function(e){
+        editUserWindow.close();
+        creatUserWindow.center().open();
+    });
+
+    createUserBtn.kendoButton({
+        themeColor: "primary"
+    });
+    editUserWinBtn.kendoButton({
+        themeColor: "primary",
+        click: function(){
+            let csrf = getCookie("csrf_access_token");
+            console.log("EDIT window btn")
+            console.log(selected_user)
+            let passw = $("#editUserPassword").data("kendoTextBox").value()
+            let passwc = $("#editUserPasswordConfrim").data("kendoTextBox").value()
+            let rolev = $("#editUserRole").data("kendoDropDownList").value()
+
+
+            let datas =  {
+                "id": selected_user.id,
+                "password": passw,
+                "passwordConfirm": passwc,
+                "role": rolev,
+            };
+            $.ajax({
+                url: '/v1/users',
+                data: JSON.stringify(datas),
+                type: "PUT",
+                dataType: "json",
+                headers: {
+                    'X-CSRF-TOKEN':csrf,
+                    'Content-Type':'application/json'
+                },
+                success: function(resultData){
+                    console.log('998877');
+                    console.log(resultData);
+                    $("#grid").data("kendoGrid").dataSource.read();
+                    creatUserWindow.close();
+                },
+                error: function(xhr, ajaxOptions, thrownError){
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                    console.log(document.cookie);
+                    console.log(csrf);
+                }
+            });
+        }
+    });
+    createUserWinBtn.kendoButton({
+        themeColor: "primary",
+        click: function(){
+            let csrf = getCookie("csrf_access_token");
+            console.log("create window btn")
+            let name = $("#createUserName").data("kendoTextBox").value()
+            let mail = $("#createUserMail").data("kendoTextBox").value()
+            let passw = $("#createUserPassword").data("kendoTextBox").value()
+            let passwc = $("#createUserPasswordConfrim").data("kendoTextBox").value()
+            let rolev = $("#createUserRole").data("kendoDropDownList").value()
+
+
+            let datas =  {
+                "user_mail": mail,
+                "user_name": name,
+                "password": passw,
+                "passwordConfirm": passwc,
+                "role": rolev,
+            };
+            $.ajax({
+                url: '/v1/users',
+                data: JSON.stringify(datas),
+                type: "POST",
+                dataType: "json",
+                headers: {
+                    'X-CSRF-TOKEN':csrf,
+                    'Content-Type':'application/json'
+                },
+                success: function(resultData){
+                    console.log('998877');
+                    console.log(resultData);
+                    $("#grid").data("kendoGrid").dataSource.read();
+                    creatUserWindow.close();
+                },
+                error: function(xhr, ajaxOptions, thrownError){
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                    console.log(document.cookie);
+                    console.log(csrf);
+                }
+            });
+        }
+    });
+
+    editUserBtn.kendoButton({
+        themeColor: "primary"
+    });
+    editUserBtn.click(function(e){
+        creatUserWindow.close();
+        editUserWindow.center().open();
+        console.log(selected_user.role)
+        console.log(selected_user)
+        editUserName.value(selected_user.name)
+        editUserMail.value(selected_user.mail)
+        editUserRole.value(selected_user.role)
+
+    });
+
+
+    $("#createUserName").kendoTextBox({
+        placeholder: "Name",
+        label: {
+            content: "Name",
+            floating: false
+        }
+    });
+    $("#createUserMail").kendoTextBox({
+        placeholder: "E-Mail",
+        label: {
+            content: "E-Mail",
+            floating: false
+        }
+    });
+    $("#createUserRole").kendoDropDownList({
+        dataTextField: "role_name",
+        dataValueField: "role_value",
+        dataSource: {
+            transport: {
+                read: {
+                    url: "/roles",
+                    type: "get",
+                    dataType: "json",
+                },
+
+            }
+        }
+    });
+    $("#createUserPassword").kendoTextBox({
+        placeholder: "Password",
+        label: {
+            content: "Password",
+            floating: false
+        }
+    });
+    $("#createUserPasswordConfrim").kendoTextBox({
+        placeholder: "Password Confirm",
+    });
+    const editNewUserBtn = $("#editNewUserBtn");
+    editNewUserBtn.kendoButton({
+            themeColor: "primary"
+    });
+    editNewUserBtn.click(function(){
+        console.log(12132123132)
+    })
+
+    const editUserName = $("#editUserName").kendoTextBox({
+        placeholder: "Name",
+        label: {
+            content: "Name",
+            floating: false
+        }
+    }).data('kendoTextBox');
+    const editUserMail = $("#editUserMail").kendoTextBox({
+        placeholder: "E-Mail",
+        label: {
+            content: "E-Mail",
+            floating: false
+        }
+    }).data('kendoTextBox');
+    const editUserRole = $("#editUserRole").kendoDropDownList({
+        dataTextField: "role_name",
+        dataValueField: "role_value",
+        dataSource: {
+            transport: {
+                read: {
+                    url: "/roles",
+                    type: "get",
+                    dataType: "json",
+                },
+
+            }
+        }
+    }).data("kendoDropDownList");
+    $("#editUserPassword").kendoTextBox({
+        placeholder: "Password",
+        label: {
+            content: "Password",
+            floating: false
+        }
+    });
+    $("#editUserPasswordConfrim").kendoTextBox({
+        placeholder: "Password Confirm",
+    });
+    $("#editUserBtn").kendoButton({
+                themeColor: "primary"
+    });
+
+    $("#grid").kendoGrid({
+        dataSource: {
+            type: "json",
+            transport: {
+                read: "/v1/users",
+                type: "get",
+                dataType: "json",
+            }
+        },
+        groupable: true,
+        sortable: true,
+        selectable: "single",
+        columns: [
+            {
+                field: "user_name",
+                title: "User Name"
+            }, {
+                field: "user_mail",
+                title: "E-Mail"
+            }, {
+                field: "role",
+                title: "Role"
+            }, {
+                field: "last_login_date",
+                title: "Last Login Date"
+            }, {
+                field: "status",
+                title: "Status"
+            }
+        ],
+        change: function(e){
+            console.log(e.sender.select())
+            console.log(e.sender.dataItem(e.sender.select()))
+            selected_user = e.sender.dataItem(e.sender.select());
+            if(selected_user === null){
+                editUserBtn.hide();
+            }else{
+                editUserBtn.show();
+            }
+        },
+    });
+
+    const creatUserWindow =$("#createUserWindow").kendoWindow({
+        width: "300px",
+        title: "Add New User",
+        visible: false,
+        modal: true,
+        actions: [
+            "Close"
+        ],
+    }).data("kendoWindow");
+
+    const editUserWindow =$("#editUserWindow").kendoWindow({
+        width: "300px",
+        title: "Edit User",
+        visible: false,
+        modal: true,
+        actions: [
+            "Close"
+        ],
+        activate:function(){
+            console.log("789")
+            console.log(selected_user)
+            editUserName.value(selected_user.user_name)
+            editUserName.enable(false)
+            editUserMail.value(selected_user.user_mail)
+            editUserMail.enable(false)
+            editUserRole.value(selected_user.role)
+        }
+    }).data("kendoWindow");
+
+    const createUserWindowj = $("#createUserWindow").parent();
+    const editUserWindowj = $("#editUserWindow").parent()
+    createUserWindowj.find('.k-window-titlebar,.k-window-actions').css('backgroundColor', '#0066ac');
+    createUserWindowj.find('.k-window-title').css('color', '#ffffff');
+    createUserWindowj.find('.k-window-action').css('color', '#ffffff');
+
+    editUserWindowj.find('.k-window-titlebar,.k-window-actions').css('backgroundColor', '#0066ac');
+    editUserWindowj.find('.k-window-title').css('color', '#ffffff');
+    editUserWindowj.find('.k-window-action').css('color', '#ffffff');
+
+})
+
+</script>
+{% endblock %}
+{# -------  #}
+
